@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "io.github.romainromich.calendar",
-    "sha256_cert_fingerprints": ["E2:E3:A9:BC:18:96:C7:E6:F0:24:CA:A6:FE:1A:E1:B9:B5:BE:72:3D:33:4D:B6:BA:06:63:01:A5:FE:84:A7:15"]
+    "sha256_cert_fingerprints": ["9C:06:4D:3A:B9:45:89:EB:31:3B:AB:C6:BF:B4:15:93:B3:1C:19:80:C9:60:12:73:D6:52:04:03:65:A1:F7:A8"]
   }
 }]
