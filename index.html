@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Calendar — установка на телефон и компьютер</title>
+<meta name="description" content="Календарь для учёбы: пары с числителем и знаменателем, дедлайны, привычки и напоминания. Как установить на Android, iPhone и компьютер.">
+<meta name="theme-color" content="#F3F5F8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --paper:#F3F5F8; --ink:#17212E; --mute:#5C6879; --rule:#D8DFE8;
+  --study:#4C6EF5; --sport:#0CA678; --dead:#E8590C; --pers:#E67700; --violet:#7048E8; --now:#F03E3E;
+  --rail:84px;
+  font-family:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink); background:var(--paper);
+  -webkit-text-size-adjust:100%;
+}
+*{box-sizing:border-box}
+body{margin:0;font-size:17px;line-height:1.55}
+a{color:inherit}
+img{display:block;max-width:100%;height:auto}
+:focus-visible{outline:3px solid var(--study);outline-offset:3px;border-radius:6px}
+
+/* верх страницы: как шапка календаря на день */
+.top{display:flex;align-items:center;gap:12px;padding:18px 24px 18px calc(var(--rail) + 12px);max-width:1180px;margin:0 auto}
+.top img{width:34px;height:34px;border-radius:9px}
+.top b{font-size:17px;letter-spacing:-.01em}
+.top .date{margin-left:auto;color:var(--mute);font-size:15px}
+
+/* день: слева шкала времени, справа события */
+.day{position:relative;max-width:1180px;margin:0 auto 80px;padding:0 24px 0 0}
+.slot{display:grid;grid-template-columns:var(--rail) 1fr;border-top:1px solid var(--rule);padding:22px 0 26px}
+.slot>time{font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px;text-align:right;padding-right:16px;margin-top:-33px;line-height:1}
+.slot>time span{background:var(--paper);padding:0 6px}
+
+.ev{--c:var(--study);position:relative;z-index:1;border-radius:12px;padding:20px 24px 24px 26px;
+  background:color-mix(in srgb,var(--c) 8%,#fff);border-left:5px solid var(--c);max-width:880px}
+.ev .when{color:var(--c);font-weight:650;font-size:14px;font-variant-numeric:tabular-nums;margin:0 0 4px}
+.ev h2{font-size:clamp(24px,3vw,31px);line-height:1.15;letter-spacing:-.02em;margin:0 0 10px;font-weight:760}
+.ev p{margin:0 0 12px;max-width:62ch}
+.ev p:last-child{margin-bottom:0}
+.note{color:var(--mute);font-size:15px}
+
+/* первое событие дня — само приложение */
+.hero{--c:var(--ink);max-width:none;display:grid;grid-template-columns:1fr 300px;gap:36px;align-items:center;padding:34px 40px 0 40px;overflow:hidden;
+  background:#fff}
+.hero .when{color:var(--mute)}
+.hero h1{font-size:clamp(52px,9vw,116px);line-height:.92;letter-spacing:-.045em;font-weight:820;margin:6px 0 18px}
+.hero .lead{font-size:clamp(18px,2vw,21px);line-height:1.45;max-width:30ch;margin:0 0 26px}
+.hero .phone{align-self:end;border-radius:34px 34px 0 0;border:9px solid var(--ink);border-bottom:0;overflow:hidden;background:#0E1116;max-height:460px;margin-top:8px}
+.hero .copy{padding-bottom:36px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 22px;border-radius:999px;font-weight:650;font-size:16px;text-decoration:none;border:2px solid var(--ink)}
+.btn.main{background:var(--ink);color:#fff}
+.btn.main svg{width:20px;height:20px;fill:currentColor}
+.btn:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.btn.main:hover{background:#2B3a4d;border-color:#2B3a4d}
+
+/* шаги */
+ol.steps{list-style:none;counter-reset:s;margin:6px 0 0;padding:0;display:grid;gap:12px;max-width:64ch}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+ol.steps li::before{content:counter(s);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;
+  color:var(--c);border:2px solid var(--c);background:#fff;margin-top:-1px}
+ol.steps b{font-weight:650}
+kbd{font:inherit;font-weight:600;background:#fff;border:1px solid var(--rule);border-bottom-width:2px;border-radius:6px;padding:0 6px;white-space:nowrap}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.shot{border-radius:12px;overflow:hidden;border:1px solid var(--rule);margin-top:18px;background:#0E1116}
+ul.can{margin:4px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 28px;max-width:820px}
+ul.can li{padding-left:16px;border-left:2px solid color-mix(in srgb,var(--c) 40%,transparent)}
+ul.can b{display:block}
+
+details{border-top:1px solid color-mix(in srgb,var(--c) 25%,transparent);padding:12px 0}
+details:last-child{border-bottom:1px solid color-mix(in srgb,var(--c) 25%,transparent)}
+summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:400;font-size:22px;line-height:1;color:var(--c)}
+details[open] summary::after{content:"−"}
+details p{margin:8px 0 0}
+
+/* линия «сейчас»: стоит на месте, а день прокручивается под ней */
+.now{position:fixed;left:0;right:0;top:42vh;height:0;z-index:0;pointer-events:none}
+.now::before{content:"";position:absolute;left:calc(max(0px,(100vw - 1180px)/2) + var(--rail) - 5px);right:0;top:-1px;border-top:2px solid var(--now)}
+.now::after{content:"";position:absolute;left:calc(max(0px,(100vw - 1180px)/2) + var(--rail) - 6px);top:-6px;width:12px;height:12px;border-radius:50%;background:var(--now)}
+.now span{position:absolute;left:calc(max(0px,(100vw - 1180px)/2));width:calc(var(--rail) - 12px);text-align:right;top:-10px;font-size:13px;font-weight:700;color:var(--now);font-variant-numeric:tabular-nums}
+
+footer{max-width:1180px;margin:0 auto;padding:0 24px 40px calc(var(--rail) + 12px);color:var(--mute);font-size:15px}
+
+@media (max-width:860px){
+  :root{--rail:54px}
+  body{font-size:16px}
+  .top{padding:14px 16px 14px calc(var(--rail) + 6px)}
+  .day{padding-right:12px}
+  .slot>time{font-size:12px;padding-right:8px}
+  .slot>time span{padding:0 3px}
+  .ev{padding:16px 16px 20px 18px}
+  .hero{grid-template-columns:1fr;padding:24px 20px 0 20px;gap:0}
+  .hero .phone{width:min(260px,72%);margin:0 auto;max-height:360px}
+  .two{grid-template-columns:1fr;gap:20px}
+  ul.can{grid-template-columns:1fr}
+  .now span{font-size:11px;width:calc(var(--rail) - 8px)}
+  footer{padding-left:calc(var(--rail) + 6px)}
+}
+</style>
+</head>
+<body>
+<div class="now" aria-hidden="true"><span id="nowT">9:00</span></div>
+
+<header class="top">
+  <img src="icon.svg" alt="">
+  <b>My Calendar</b>
+  <span class="date" id="today"></span>
+</header>
+
+<main class="day">
+  <section class="slot" data-t="540">
+    <time><span>9:00</span></time>
+    <div class="ev hero">
+      <div class="copy">
+        <p class="when">9:00–10:20</p>
+        <h1>My Calendar</h1>
+        <p class="lead">Пары с числителем и знаменателем, дедлайны, привычки и напоминания с номером аудитории — на телефоне и компьютере.</p>
+        <div class="cta">
+          <a class="btn main" href="https://github.com/romainromich/calendar/releases/download/apk-latest/calendar.apk">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3h2v10.17l3.59-3.58L18 11l-6 6-6-6 1.41-1.41L11 13.17z"/><path d="M5 19h14v2H5z"/></svg>
+            Скачать для Android</a>
+          <a class="btn" href="/calendar/">Открыть в браузере</a>
+        </div>
+        <p class="note">Android 8 и новее, файл 430 КБ. На iPhone и компьютере ничего скачивать не нужно — инструкции ниже.</p>
+      </div>
+      <img class="phone" src="img/phone.webp" width="600" height="1298" alt="Экран дня в приложении: пары по времени, окна между ними и задачи, которые можно успеть">
+    </div>
+  </section>
+
+  <section class="slot" data-t="630" id="android">
+    <time><span>10:30</span></time>
+    <div class="ev" style="--c:var(--study)">
+      <p class="when">10:30–11:50</p>
+      <h2>Установка на Android</h2>
+      <ol class="steps">
+        <li><span>Откройте эту страницу на телефоне и нажмите <b>«Скачать для Android»</b>. Файл <kbd>calendar.apk</kbd> скачается в «Загрузки».</span></li>
+        <li><span>Нажмите на скачанный файл. Если телефон спросит, разрешить ли установку из браузера, откройте настройки и включите <b>«Разрешить из этого источника»</b>, затем вернитесь назад.</span></li>
+        <li><span>Нажмите <b>«Установить»</b>. Если Play Защита предупредит о неизвестном приложении, выберите <b>«Подробнее» → «Всё равно установить»</b>: так она реагирует на любое приложение не из Google Play.</span></li>
+        <li><span>Откройте My Calendar. Обновлять его не придётся: новая версия подтягивается сама при запуске.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="slot" data-t="720" id="iphone">
+    <time><span>12:00</span></time>
+    <div class="ev" style="--c:var(--violet)">
+      <p class="when">12:00–13:20</p>
+      <h2>Установка на iPhone</h2>
+      <ol class="steps">
+        <li><span>Откройте <a href="/calendar/">romainromich.github.io/calendar</a> именно в Safari.</span></li>
+        <li><span>Нажмите <b>«Поделиться»</b> (квадрат со стрелкой вверх) и выберите <b>«На экран „Домой“»</b>, затем <b>«Добавить»</b>.</span></li>
+        <li><span>Запускайте календарь с иконки на экране «Домой». Уведомления на iPhone работают только так и только на iOS 16.4 и новее.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="slot" data-t="840" id="pc">
+    <time><span>14:00</span></time>
+    <div class="ev" style="--c:var(--sport)">
+      <p class="when">14:00–15:20</p>
+      <h2>Установка на компьютер</h2>
+      <ol class="steps">
+        <li><span>Откройте <a href="/calendar/">romainromich.github.io/calendar</a> в Chrome, Edge или Яндекс Браузере.</span></li>
+        <li><span>Справа в адресной строке появится значок установки — монитор со стрелкой. Нажмите его и подтвердите <b>«Установить»</b>. Если значка нет, найдите в меню браузера пункт со словом «Установить».</span></li>
+        <li><span>Календарь откроется в отдельном окне, появится в меню «Пуск» и на панели задач, будет работать и без интернета.</span></li>
+      </ol>
+      <p class="note" style="margin-top:14px">В Firefox и Safari на Mac установить нельзя, но можно пользоваться как обычным сайтом.</p>
+    </div>
+  </section>
+
+  <section class="slot" data-t="930" id="code">
+    <time><span>15:30</span></time>
+    <div class="ev" style="--c:var(--pers)">
+      <p class="when">15:30–16:50</p>
+      <h2>Код приглашения</h2>
+      <div class="two">
+        <div>
+          <p>Календарь работает и без кода: всё хранится на вашем устройстве. Код открывает то, что требует сервера:</p>
+          <ul class="can" style="grid-template-columns:1fr">
+            <li><b>Уведомления при закрытом приложении</b>за 10 минут до пары, с аудиторией и видом занятия</li>
+            <li><b>Синхронизацию</b>между телефоном и компьютером</li>
+            <li><b>Распознавание расписания</b>по скриншоту с сайта вуза</li>
+          </ul>
+        </div>
+        <div>
+          <ol class="steps">
+            <li><span>Откройте ссылку из приглашения — вход произойдёт сам. Или введите код в <b>Настройки → Доступ к серверу</b>.</span></li>
+            <li><span>Чтобы войти на втором устройстве, на первом нажмите <b>«Войти на другом устройстве»</b> и введите полученный код на втором.</span></li>
+          </ol>
+          <p class="note" style="margin-top:14px">Код приглашения одноразовый. Не пересылайте его: другому человеку нужен свой.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slot" data-t="1020" id="features">
+    <time><span>17:00</span></time>
+    <div class="ev" style="--c:var(--study);max-width:none">
+      <p class="when">17:00–18:20</p>
+      <h2>Что умеет</h2>
+      <ul class="can">
+        <li><b>Расписание за минуту</b>Скриншот, таблица Excel или файл .ics превращаются в пары на весь семестр</li>
+        <li><b>Числитель и знаменатель</b>Пары по нечётным и чётным неделям, номер недели всегда на виду</li>
+        <li><b>Окна между парами</b>Показывает свободное время и задачи, которые в него помещаются</li>
+        <li><b>Быстрый ввод</b>Пишете «завтра 15:00 линал» — событие создаётся само, можно голосом</li>
+        <li><b>Задачи и привычки</b>С дедлайнами, отметками по дням и итогами недели</li>
+        <li><b>Без интернета</b>Работает офлайн, синхронизируется, когда сеть появится</li>
+      </ul>
+      <img class="shot" src="img/desktop.webp" width="1600" height="1000" loading="lazy" alt="Неделя на компьютере: пары по дням, задачи и привычки в правой колонке">
+    </div>
+  </section>
+
+  <section class="slot" data-t="1110" id="faq">
+    <time><span>18:30</span></time>
+    <div class="ev" style="--c:var(--dead)">
+      <p class="when">18:30–19:50</p>
+      <h2>Вопросы</h2>
+      <details>
+        <summary>Android называет приложение небезопасным</summary>
+        <p>Так Android встречает любое приложение, скачанное не из Google Play. Скачивайте файл только по кнопке на этой странице: он собран и подписан автором.</p>
+      </details>
+      <details>
+        <summary>Где хранятся мои данные?</summary>
+        <p>На вашем устройстве. Если включить синхронизацию, на сервер уходит зашифрованная копия, а ключ от неё есть только у вас: сервер не может её прочитать.</p>
+      </details>
+      <details>
+        <summary>Это бесплатно?</summary>
+        <p>Да. Рекламы и платных функций нет.</p>
+      </details>
+      <details>
+        <summary>Распознавание пишет, что лимит исчерпан</summary>
+        <p>Каждому доступно 20 картинок в день, лимит обновляется в 03:00 по Москве. Длинную таблицу снимайте прокруткой: скриншоты склеятся в одну картинку и займут одно распознавание. Excel, CSV и .ics загружаются без ограничений.</p>
+      </details>
+      <details>
+        <summary>Нашёл ошибку</summary>
+        <p>Напишите тому, кто прислал вам приглашение: что делали, что ожидали и что получилось. Скриншот очень поможет.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>My Calendar делает Роман Ефремов. Приложение в разработке и открыто для тестирования по приглашениям.</footer>
+
+<script>
+(function () {
+  var M = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var W = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+  var d = new Date();
+  document.getElementById('today').textContent = W[d.getDay()] + ', ' + d.getDate() + ' ' + M[d.getMonth()];
+  // время на линии «сейчас» — по тому, какая часть дня под ней
+  var slots = [].slice.call(document.querySelectorAll('.slot')), label = document.getElementById('nowT'), line = document.querySelector('.now');
+  function fmt(m) { m = Math.round(m); return Math.floor(m / 60) + ':' + ('0' + m % 60).slice(-2); }
+  function upd() {
+    var y = line.getBoundingClientRect().top, t = +slots[0].dataset.t;
+    for (var i = 0; i < slots.length; i++) {
+      var r = slots[i].getBoundingClientRect(), a = +slots[i].dataset.t, b = slots[i + 1] ? +slots[i + 1].dataset.t : a + 80;
+      if (y < r.top) { if (i === 0) t = a; break; }
+      t = a + Math.min(1, (y - r.top) / r.height) * (b - a);
+    }
+    label.textContent = fmt(t);
+  }
+  addEventListener('scroll', upd, { passive: true });
+  addEventListener('resize', upd);
+  upd();
+})();
+</script>
+</body>
+</html>
